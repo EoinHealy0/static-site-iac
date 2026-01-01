@@ -1,0 +1,46 @@
+on: workflow_call
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform-deploy:
+    name: Deploy Terraform
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./terraform/full
+    env:
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    steps:
+    - name: Azure login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v2.0.3
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Validate
+      run: terraform validate
+      
+    - name: Terraform Plan
+      run: terraform plan -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}"
+    
+    - name: Terraform Apply
+      run: terraform apply -auto-approve -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}"
+
+    - name: Output Terraform Outputs
+      run: |
+        VM_IP=$(terraform output -raw public_ip_address)
+        echo "VM_IP=$VM_IP" >> $GITHUB_OUTPUT
+        echo "The VM is accessible at IP: $VM_IP"
+
+        NSG_ID=$(terraform output -raw network_security_group_id)
+        echo "NSG_ID=$NSG_ID" >> $GITHUB_OUTPUT
+        echo "The Network Security Group ID is: $NSG_ID"
