@@ -13,7 +13,7 @@ jobs:
     needs: deploy
     uses: ./.github/workflows/ansible-worker.yml
     with:
-      vm_ip: ${{ needs.deploy.outputs.VM_IP }}
-      nsg_id: ${{ needs.deploy.outputs.NSG_ID }}
+      vm_ip: ${{ needs.deploy.outputs.vmp_ip }}
+      nsg_id: ${{ needs.deploy.outputs.nsg_id }}
     secrets: inherit
   

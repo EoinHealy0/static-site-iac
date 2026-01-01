@@ -1,14 +1,5 @@
 on: 
   workflow_call:
-    secrets:
-      AZURE_CLIENT_ID:
-        required: true
-      AZURE_TENANT_ID:
-        required: true
-      AZURE_SUBSCRIPTION_ID:
-        required: true
-      SSH_PUBLIC_KEY:
-        required: true
     outputs:
       vm_ip:
         description: "The public IP address of the deployed VM"
@@ -21,6 +12,11 @@ permissions:
   contents: read
 
 jobs:
+  env:
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        ARM_USE_OIDC: true
   terraform-deploy:
     name: Deploy Terraform
     runs-on: ubuntu-latest
