@@ -19,6 +19,8 @@ jobs:
     defaults:
       run:
         working-directory: ./terraform/full
+    env:
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     outputs:
       vm_ip: ${{ steps.terraform_outputs.outputs.VM_IP }}
       nsg_id: ${{ steps.terraform_outputs.outputs.NSG_ID }}
