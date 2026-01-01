@@ -1,0 +1,23 @@
+on:
+  workflow_call:
+    inputs:
+      vm_ip:
+        required: true
+        type: string
+      nsg_id:
+        required: true
+        type: string
+permissions:
+  id-token: write
+  contents: read
+  
+jobs:
+  ansible-deploy:
+    name: Configure VM with Ansible
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Test outputs from terraform
+      run: |
+        echo "VM_IP is ${{ inputs.vm_ip }}"
+        echo "NSG_ID is ${{ inputs.nsg_id }}"
