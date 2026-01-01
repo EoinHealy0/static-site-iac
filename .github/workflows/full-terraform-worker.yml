@@ -43,10 +43,10 @@ jobs:
       run: terraform validate
       
     - name: Terraform Plan
-      run: terraform plan -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" -var="admin_user=${{ secrets.VM_ADMIN_USER }}"
+      run: terraform plan -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" -var="admin_username=${{ secrets.VM_ADMIN_USER }}"
     
     - name: Terraform Apply
-      run: terraform apply -auto-approve -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" -var="admin_user=${{ secrets.VM_ADMIN_USER }}"
+      run: terraform apply -auto-approve -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" -var="admin_username=${{ secrets.VM_ADMIN_USER }}"
 
     - name: Output Terraform Outputs
       id: terraform_outputs
