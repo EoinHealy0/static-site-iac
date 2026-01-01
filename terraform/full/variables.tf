@@ -34,7 +34,6 @@ variable "admin_username" {
 }
 
 variable "ssh_public_key" {
-  description = "Path to the SSH public key"
+  description = "public key for SSH access to the VM"
   type        = string
-  default     = "~/.ssh/staticsite.pub"
 }
