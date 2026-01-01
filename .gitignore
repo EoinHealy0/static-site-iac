@@ -1,0 +1,14 @@
+.terraform/
+*.tfstate
+*.tfstate.backup
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
+*.tfvars.json
+crash.log
+*.tfplan
+override.tf
+override.tf.json
+# Keep the lockfile tracked by default
+# .terraform.lock.hcl
+
