@@ -23,6 +23,9 @@ jobs:
       vm_ip: ${{ steps.terraform_outputs.outputs.VM_IP }}
       nsg_id: ${{ steps.terraform_outputs.outputs.NSG_ID }}
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
     - name: Azure login
       uses: azure/login@v2
       with:
