@@ -1,5 +1,14 @@
 on: 
   workflow_call:
+    secrets:
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+      SSH_PUBLIC_KEY:
+        required: true
     outputs:
       vm_ip:
         description: "The public IP address of the deployed VM"
