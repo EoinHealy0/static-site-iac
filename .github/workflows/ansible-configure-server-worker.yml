@@ -36,6 +36,8 @@ jobs:
 
     - name: Add private key to runner
       run: |
+        mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/staticsite
         chmod 600 ~/.ssh/staticsite
         eval $(ssh-agent -s)
@@ -65,7 +67,7 @@ jobs:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        
+
     - name: Whitelist runner IP in NSG
       run: |
         az network nsg rule create --resource-group ${{ inputs.rg_name }} --nsg-name ${{ inputs.nsg_name }} \
