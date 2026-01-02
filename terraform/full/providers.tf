@@ -5,9 +5,13 @@ terraform {
       version = ">= 4.57.0"
     }
   }
+  
+  backend "azurerm" {
+    container_name = "fulltfstate"
+    key = "terraform.tfstate"
+  }
 }
 
-# Configure the Microsoft Azure Provider
 provider "azurerm" {
   features {}
 }
