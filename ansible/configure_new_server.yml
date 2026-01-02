@@ -5,3 +5,4 @@
   roles:
     - security_updates
     - install_docker
+    - install_fail2ban
