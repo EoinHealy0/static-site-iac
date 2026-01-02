@@ -78,7 +78,6 @@ jobs:
         echo "RG_NAME=$RG_NAME" >> $GITHUB_OUTPUT
         echo "Resource Group: $RG_NAME"
 
-
     - name: Terraform Destroy
-      if: ${{ inputs.destroy_after_deploy == true }}
+      if: always() and inputs.destroy_after_deploy == true
       run: terraform destroy -auto-approve -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" -var="admin_username=${{ secrets.VM_ADMIN_USER }}" -var="environment=${{ inputs.environment }}"
