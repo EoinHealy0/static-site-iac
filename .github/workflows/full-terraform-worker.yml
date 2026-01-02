@@ -55,7 +55,8 @@ jobs:
         terraform_wrapper: false
 
     - name: Terraform Init
-      run: terraform init \
+      run: |
+        terraform init \
         -backend-config="resource_group_name=${{ secrets.BACKEND_RG_NAME }}" \
         -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_NAME }}"
 
