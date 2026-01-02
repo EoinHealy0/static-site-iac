@@ -13,6 +13,10 @@ on:
         required: false
         type: boolean
         default: false
+      destroy_only:
+        required: false
+        type: boolean
+        default: false
 permissions:
   id-token: write
   contents: read
@@ -24,13 +28,15 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
       destroy_after_deploy: ${{ inputs.destroy_after_deploy }}
+      destroy_only: ${{ inputs.destroy_only }}
 
   config:
     needs: deploy
+    if: ${{ inputs.destroy_only == false }}
     uses: ./.github/workflows/ansible-configure-server-worker.yml
+    secrets: inherit
     with:
       vm_ip: ${{ needs.deploy.outputs.vm_ip }}
       nsg_name: ${{ needs.deploy.outputs.nsg_name }}
       rg_name: ${{ needs.deploy.outputs.rg_name }}
-    secrets: inherit
   

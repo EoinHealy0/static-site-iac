@@ -7,6 +7,9 @@ on:
       destroy_after_deploy:
         required: true
         type: boolean
+      destroy_only:
+        required: true
+        type: boolean
     outputs:
       vm_ip:
         description: "The public IP address of the deployed VM"
@@ -52,18 +55,28 @@ jobs:
         terraform_wrapper: false
 
     - name: Terraform Init
-      run: terraform init
+      run: |
+        terraform init \
+        -backend-config="resource_group_name=${{ secrets.BACKEND_RG_NAME }}" \
+        -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_NAME }}"
+
+    - name: Select Terraform Workspace
+      run: |
+        terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }}
 
     - name: Terraform Validate
       run: terraform validate
       
     - name: Terraform Plan
+      if: inputs.destroy_only == false
       run: terraform plan -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" -var="admin_username=${{ secrets.VM_ADMIN_USER }}" -var="env=${{ inputs.environment }}"
     
     - name: Terraform Apply
+      if: inputs.destroy_only == false
       run: terraform apply -auto-approve -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" -var="admin_username=${{ secrets.VM_ADMIN_USER }}" -var="env=${{ inputs.environment }}"
 
     - name: Output Terraform Outputs
+      if: inputs.destroy_only == false
       id: terraform_outputs
       run: |
         VM_IP=$(terraform output -raw public_ip_address)
@@ -79,5 +92,5 @@ jobs:
         echo "Resource Group: $RG_NAME"
 
     - name: Terraform Destroy
-      if: always() && inputs.destroy_after_deploy == true
+      if: always() && (inputs.destroy_after_deploy == true || inputs.destroy_only == true)
       run: terraform destroy -auto-approve -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" -var="admin_username=${{ secrets.VM_ADMIN_USER }}" -var="env=${{ inputs.environment }}"
