@@ -67,7 +67,7 @@ jobs:
 
     - name: Delete whitelist rule from NSG
       if: always()
-      continue-on-error:true
+      continue-on-error: true
       run: |
         az network nsg rule delete --resource-group ${{ inputs.rg_name }} --nsg-name ${{ inputs.nsg_name }} \
         --name AllowGitHubRunnerIP
