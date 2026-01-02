@@ -79,5 +79,5 @@ jobs:
         echo "Resource Group: $RG_NAME"
 
     - name: Terraform Destroy
-      if: always() and inputs.destroy_after_deploy == true
+      if: always() && inputs.destroy_after_deploy == true
       run: terraform destroy -auto-approve -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" -var="admin_username=${{ secrets.VM_ADMIN_USER }}" -var="environment=${{ inputs.environment }}"
