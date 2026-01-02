@@ -71,7 +71,7 @@ jobs:
     - name: Run ansible playbook
       run: |
         ansible-playbook -i "${{ inputs.vm_ip }}," -u ${{ secrets.VM_ADMIN_USER }} \
-        --ssh-extra-args="-o StrictHostKeyChecking=no" connectivity_test.yml
+        --ssh-extra-args="-o StrictHostKeyChecking=no" configure_new_server.yml
 
     - name: Delete whitelist rule from NSG
       if: always()
