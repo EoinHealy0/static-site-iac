@@ -1,5 +1,18 @@
 name: Deploy resources
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+    inputs:
+      environment:
+        required: false
+        type: choice
+        options:
+          - dev
+          - prod
+        default: "dev"
+      destroy_after_deploy:
+        required: false
+        type: boolean
+        default: false
 permissions:
   id-token: write
   contents: read
@@ -8,12 +21,16 @@ jobs:
   deploy:
     uses: ./.github/workflows/full-terraform-worker.yml
     secrets: inherit
+    with:
+      environment: ${{ inputs.environment }}
+      destroy_after_deploy: ${{ inputs.destroy_after_deploy }}
 
   config:
     needs: deploy
-    uses: ./.github/workflows/ansible-worker.yml
+    uses: ./.github/workflows/ansible-configure-server-worker.yml
     with:
       vm_ip: ${{ needs.deploy.outputs.vm_ip }}
-      nsg_id: ${{ needs.deploy.outputs.nsg_id }}
+      nsg_name: ${{ needs.deploy.outputs.nsg_name }}
+      rg_name: ${{ needs.deploy.outputs.rg_name }}
     secrets: inherit
   

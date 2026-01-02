@@ -1,6 +1,11 @@
-output "network_security_group_id" {
+output "network_security_name" {
     description = "The ID of the Network Security Group."
-    value       = azurerm_network_security_group.nsg.id
+    value       = azurerm_network_security_group.nsg.name
+}
+
+output "resource_group_name" {
+    description = "The name of the Resource Group."
+    value       = azurerm_resource_group.rg.name
 }
 
 output "public_ip_address" {

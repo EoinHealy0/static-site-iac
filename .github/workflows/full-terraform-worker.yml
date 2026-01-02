@@ -1,12 +1,27 @@
 on: 
   workflow_call:
+    inputs:
+      environment:
+        required: false
+        type: choice
+        options:
+          - dev
+          - prod
+        default: "dev"
+      destroy_after_deploy:
+        required: false
+        type: boolean
+        default: false
     outputs:
       vm_ip:
         description: "The public IP address of the deployed VM"
         value: ${{ jobs.terraform-deploy.outputs.vm_ip }}
-      nsg_id:
-        description: "The ID of the Network Security Group"
-        value: ${{ jobs.terraform-deploy.outputs.nsg_id }}
+      nsg_name:
+        description: "The name of the Network Security Group"
+        value: ${{ jobs.terraform-deploy.outputs.nsg_name }}
+      rg_name:
+        description: "The name of the Resource Group"
+        value: ${{ jobs.terraform-deploy.outputs.rg_name }}
 
 permissions:
   id-token: write
@@ -23,7 +38,8 @@ jobs:
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     outputs:
       vm_ip: ${{ steps.terraform_outputs.outputs.VM_IP }}
-      nsg_id: ${{ steps.terraform_outputs.outputs.NSG_ID }}
+      nsg_name: ${{ steps.terraform_outputs.outputs.NSG_NAME }}
+      rg_name: ${{ steps.terraform_outputs.outputs.RG_NAME }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -45,10 +61,10 @@ jobs:
       run: terraform validate
       
     - name: Terraform Plan
-      run: terraform plan -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" -var="admin_username=${{ secrets.VM_ADMIN_USER }}"
+      run: terraform plan -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" -var="admin_username=${{ secrets.VM_ADMIN_USER }}" -var="environment=${{ inputs.environment }}"
     
     - name: Terraform Apply
-      run: terraform apply -auto-approve -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" -var="admin_username=${{ secrets.VM_ADMIN_USER }}"
+      run: terraform apply -auto-approve -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" -var="admin_username=${{ secrets.VM_ADMIN_USER }}" -var="environment=${{ inputs.environment }}"
 
     - name: Output Terraform Outputs
       id: terraform_outputs
@@ -57,10 +73,15 @@ jobs:
         echo "VM_IP=$VM_IP" >> $GITHUB_OUTPUT
         echo "The VM is accessible at IP: $VM_IP"
 
-        NSG_ID=$(terraform output -raw network_security_group_id)
-        echo "NSG_ID=$NSG_ID" >> $GITHUB_OUTPUT
-        echo "The Network Security Group ID is: $NSG_ID"
+        NSG_NAME=$(terraform output -raw network_security_group_name)
+        echo "NSG_NAME=$NSG_NAME" >> $GITHUB_OUTPUT
+        echo "Network Security Group Name: $NSG_NAME"
+
+        RG_NAME=$(terraform output -raw resource_group_name)
+        echo "RG_NAME=$RG_NAME" >> $GITHUB_OUTPUT
+        echo "Resource Group: $RG_NAME"
+
 
     - name: Terraform Destroy
-      if: github.branch != 'main'
-      run: terraform destroy -auto-approve -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" -var="admin_user=${{ secrets.VM_ADMIN_USER }}"
+      if: ${{ inputs.destroy_after_deploy == true }}
+      run: terraform destroy -auto-approve -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" -var="admin_username=${{ secrets.VM_ADMIN_USER }}" -var="environment=${{ inputs.environment }}"
