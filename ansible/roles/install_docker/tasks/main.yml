@@ -40,11 +40,11 @@
     state: started
     enabled: yes
 
-- name: Create docker user
-  ansible.builtin.user:
-    name: dockerops
-    state: present
-    create_home: yes
-    shell: /bin/bash
-    groups: docker
-    append: yes
+- name: Create docker containerd
+  community.docker.docker_container:
+    name: nginx-test
+    image: nginx:alpine
+    state: started
+    published_ports:
+      - "80:80"
+    restart_policy: always
