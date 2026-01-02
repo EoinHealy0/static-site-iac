@@ -41,18 +41,9 @@ jobs:
 
     - name: Add private key to runner
       run: |
-        mkdir -p ~/.ssh
-        chmod 700 ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/staticsite
-        chmod 600 ~/.ssh/staticsite
-        eval $(ssh-agent -s)
-
-        expect << EOF
-          spawn ssh-add ~/.ssh/staticsite 
-          expect "Enter passphrase"
-          send "${{ secrets.PRIVATE_KEY_PASSPHRASE }}\r"
-          expect eof
-        EOF
+        ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+        echo "echo ${{ secrets.PRIVATE_KEY_PASSPHRASE }}" > ~/.ssh_askpass && chmod +x ~/.ssh_askpass
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' | DISPLAY=None SSH_ASKPASS=~/.ssh_askpass ssh-add - >/dev/null
       
     - name: Get runner IP
       id: get_runner_ip
