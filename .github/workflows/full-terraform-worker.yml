@@ -2,16 +2,11 @@ on:
   workflow_call:
     inputs:
       environment:
-        required: false
-        type: choice
-        options:
-          - dev
-          - prod
-        default: "dev"
+        required: true
+        type: string
       destroy_after_deploy:
-        required: false
+        required: true
         type: boolean
-        default: false
     outputs:
       vm_ip:
         description: "The public IP address of the deployed VM"
