@@ -19,6 +19,9 @@ jobs:
   ansible-deploy:
     name: Configure VM with Ansible
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./ansible
 
     steps:
     - name: Checkout repository
@@ -64,6 +67,11 @@ jobs:
         --name AllowGitHubRunnerIP --priority 1000 --access Allow --protocol Tcp \
         --direction Inbound --source-address-prefixes ${{ steps.get_runner_ip.outputs.RUNNER_IP }} \
         --source-port-ranges '*' --destination-address-prefixes '*' --destination-port-ranges 22
+
+    - name: Run ansible playbook
+      run: |
+        ansible-playbook -i "${{ inputs.vm_ip }}," -u ${{ secrets.VM_ADMIN_USER }} \
+        --ssh-extra-args="-o StrictHostKeyChecking=no" connectivity_test.yml
 
     - name: Delete whitelist rule from NSG
       if: always()
