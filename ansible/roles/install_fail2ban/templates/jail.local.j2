@@ -1,0 +1,12 @@
+[DEFAULT]
+bantime   = 6h
+findtime  = 1h
+maxretry  = 3
+
+ignore_ip =  127.0.0.1/8 ::1 {{ lookup('env', 'MY_HOME_DOMAIN') }}
+
+[sshd]
+enabled = true
+port    = ssh
+logpath = %(sshd_log)s
+backend = %(sshd_backend)s
