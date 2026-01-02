@@ -1,0 +1,74 @@
+on:
+  workflow_call:
+    inputs:
+      vm_ip:
+        required: true
+        type: string
+      nsg_name:
+        required: true
+        type: string
+      rg_name:
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  ansible-deploy:
+    name: Configure VM with Ansible
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        sparse-checkout: |
+          ansible/
+          scripts/
+
+    - name: Test outputs from terraform
+      run: |
+        echo "VM_IP is ${{ inputs.vm_ip }}"
+        echo "NSG_NAME is ${{ inputs.nsg_name }}"
+        echo "RG_NAME is ${{ inputs.rg_name }}"
+
+    - name: Install Ansible and expect
+      run: |
+        sudo apt update
+        sudo apt install -y ansible expect
+
+    - name: Add private key to runner
+      uses: webfactory/ssh-agent@v0.9.1
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      
+    - name: Get runner IP
+      id: get_runner_ip
+      run: |
+        RUNNER_IP=$(curl -s "https://api.ipify.org")
+        echo "RUNNER_IP=$RUNNER_IP" >> $GITHUB_OUTPUT
+        echo "Runner public IP is $RUNNER_IP"
+
+    - name: Azure login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Whitelist runner IP in NSG
+      run: |
+        az network nsg rule create --resource-group ${{ inputs.rg_name }} --nsg-name ${{ inputs.nsg_name }} \
+        --name AllowGitHubRunnerIP --priority 1000 --access Allow --protocol Tcp \
+        --direction Inbound --source-address-prefixes ${{ steps.get_runner_ip.outputs.RUNNER_IP }} \
+        --source-port-ranges '*' --destination-address-prefixes '*' --destination-port-ranges 22
+
+    - name: Delete whitelist rule from NSG
+      if: always()
+      continue-on-error: true
+      run: |
+        az network nsg rule delete --resource-group ${{ inputs.rg_name }} --nsg-name ${{ inputs.nsg_name }} \
+        --name AllowGitHubRunnerIP
+      
