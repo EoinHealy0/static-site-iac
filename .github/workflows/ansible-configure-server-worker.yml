@@ -34,6 +34,24 @@ jobs:
         echo "NSG_NAME is ${{ inputs.nsg_name }}"
         echo "RG_NAME is ${{ inputs.rg_name }}"
 
+    - name: Add private key to runner
+      run: |
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/staticsite
+        chmod 600 ~/.ssh/staticsite
+        eval $(ssh-agent -s)
+
+        expect << EOF
+          spawn ssh-add ~/.ssh/staticsite 
+          expect "Enter passphrase"
+          send "${{ secrets.PRIVATE_KEY_PASSPHRASE }}\r"
+          expect eof
+        EOF
+
+    - name: Install Ansible
+      run: |
+        sudo apt update
+        sudo apt install -y ansible
+      
     - name: Get runner IP
       id: get_runner_ip
       run: |
@@ -41,7 +59,10 @@ jobs:
         echo "RUNNER_IP=$RUNNER_IP" >> $GITHUB_OUTPUT
         echo "Runner public IP is $RUNNER_IP"
 
-    - name: Install Ansible
+    - name: Whitelist runner IP in NSG
       run: |
-        sudo apt update
-        sudo apt install -y ansible
+        az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+        az network nsg rule create --resource-group ${{ inputs.rg_name }} --nsg-name ${{ inputs.nsg_name }} \
+        --name AllowGitHubRunnerIP --priority 1000 --access Allow --protocol Tcp \
+        --direction Inbound --source-address-prefixes ${{ steps.get_runner_ip.outputs.RUNNER_IP }} \
+        --source-port-ranges '*' --destination-address-prefixes '*' --destination-port-ranges 22
