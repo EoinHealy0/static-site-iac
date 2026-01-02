@@ -49,10 +49,10 @@ jobs:
           expect eof
         EOF
 
-    - name: Install Ansible
+    - name: Install Ansible and expect
       run: |
         sudo apt update
-        sudo apt install -y ansible
+        sudo apt install -y ansible expect
       
     - name: Get runner IP
       id: get_runner_ip
