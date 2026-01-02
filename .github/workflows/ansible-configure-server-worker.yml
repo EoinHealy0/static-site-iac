@@ -64,3 +64,11 @@ jobs:
         --name AllowGitHubRunnerIP --priority 1000 --access Allow --protocol Tcp \
         --direction Inbound --source-address-prefixes ${{ steps.get_runner_ip.outputs.RUNNER_IP }} \
         --source-port-ranges '*' --destination-address-prefixes '*' --destination-port-ranges 22
+
+    - name: Delete whitelist rule from NSG
+      if: always()
+      continue-on-error:true
+      run: |
+        az network nsg rule delete --resource-group ${{ inputs.rg_name }} --nsg-name ${{ inputs.nsg_name }} \
+        --name AllowGitHubRunnerIP
+      
