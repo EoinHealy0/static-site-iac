@@ -40,10 +40,9 @@ jobs:
         sudo apt install -y ansible expect
 
     - name: Add private key to runner
-      run: |
-        ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-        echo "echo ${{ secrets.PRIVATE_KEY_PASSPHRASE }}" > ~/.ssh_askpass && chmod +x ~/.ssh_askpass
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' | DISPLAY=None SSH_ASKPASS=~/.ssh_askpass ssh-add - >/dev/null
+      uses: webfactory/ssh-agent@v0.9.1
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       
     - name: Get runner IP
       id: get_runner_ip
