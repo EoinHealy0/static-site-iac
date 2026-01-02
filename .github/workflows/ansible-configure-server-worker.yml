@@ -46,6 +46,7 @@ jobs:
       uses: webfactory/ssh-agent@v0.9.1
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        log-public-key: false
       
     - name: Get runner IP
       id: get_runner_ip

@@ -40,7 +40,7 @@
     state: started
     enabled: yes
 
-- name: Create docker containerd
+- name: Create docker container
   community.docker.docker_container:
     name: nginx-test
     image: nginx:alpine
