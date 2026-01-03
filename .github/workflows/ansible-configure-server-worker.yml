@@ -37,10 +37,10 @@ jobs:
         echo "NSG_NAME is ${{ inputs.nsg_name }}"
         echo "RG_NAME is ${{ inputs.rg_name }}"
 
-    - name: Install Ansible and expect
+    - name: Install Ansible
       run: |
         sudo apt update
-        sudo apt install -y ansible expect
+        sudo apt install -y ansible
 
     - name: Add private key to runner
       uses: webfactory/ssh-agent@v0.9.1
