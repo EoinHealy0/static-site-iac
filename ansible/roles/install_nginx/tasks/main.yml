@@ -1,0 +1,25 @@
+---
+- name: Install nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: yes
+
+- name: Copy nginx configuration file
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/my_static_site.conf
+  notify: Reload nginx
+
+- name: Enable the site by creating a symlink
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/my_static_site.conf
+    dest: /etc/nginx/sites-enabled/my_static_site.conf
+    state: link
+  notify: Reload nginx
+
+- name: Remove the default nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Reload nginx

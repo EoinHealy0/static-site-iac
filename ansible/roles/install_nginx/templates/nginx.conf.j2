@@ -1,0 +1,28 @@
+upstream my_static_site {
+    server 127.0.0.1:{{ blue_port }} {{ 'max_fails=3 fail_timeout=30s' if active_color == 'blue' else 'backup' }};
+    server 127.0.0.1:{{ green_port }} {{ 'max_fails=3 fail_timeout=30s' if active_color == 'green' else 'backup' }};
+}
+
+server {
+    listen 80 default_server;
+    server_name _;
+    
+    location / {
+        proxy_pass http://my_static_site;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        add_header X-Deployed-Color {{ active_color }};
+    }
+}
+
+server {
+    listen 81;
+    server_name _;
+
+    location / {
+        proxy_pass http://127.0.0.1:{{ green_port if active_color == 'blue' else blue_port }};
+        
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}

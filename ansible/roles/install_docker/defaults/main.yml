@@ -1,0 +1,5 @@
+blue_port: 8080
+green_port: 8081
+active_color: blue
+blue_image: nginx:alpine-slim
+green_image: nginx:alpine-slim
