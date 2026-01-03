@@ -49,5 +49,5 @@
       - "127.0.0.1:{{ item.port }}:80"
     restart_policy: always
   loop:
-    - { colour: blue, port: {{ blue_port}}, image: {{ blue_image }} }
-    - { colour: green, port: {{ green_port }}, image: {{ green_image }} }
+    - { colour: blue, port: "{{ blue_port }}", image: "{{ blue_image }}" }
+    - { colour: green, port: "{{ green_port }}", image: "{{ green_image }}" }
