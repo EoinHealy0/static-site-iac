@@ -10,3 +10,8 @@
   ansible.builtin.reboot:
     reboot_timeout: 300
   when: update_result.changed
+
+- name: Purge update_cache
+  ansible.builtin.apt:
+    autoclean: yes
+    autoremove: yes
