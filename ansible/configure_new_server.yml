@@ -8,6 +8,6 @@
     active_color: blue
   roles:
     - security_updates
-    - install_docker
-    - install_fail2ban
-    - install_nginx
+    - configure_docker
+    - configure_fail2ban
+    - configure_nginx

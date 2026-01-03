@@ -1,0 +1,4 @@
+---
+bantime: "12h"
+findtime: "30m"
+maxretry: "2"
