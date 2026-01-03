@@ -1,0 +1,17 @@
+---
+- name: Run updates
+  ansible.builtin.apt:
+    name: '*'
+    state: latest
+    update_cache: yes
+  register: update_result
+
+- name: Reboot after updates
+  ansible.builtin.reboot:
+    reboot_timeout: 300
+  when: update_result.changed
+
+- name: Purge update_cache
+  ansible.builtin.apt:
+    autoclean: yes
+    autoremove: yes

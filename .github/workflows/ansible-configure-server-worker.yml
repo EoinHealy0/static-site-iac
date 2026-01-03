@@ -37,15 +37,16 @@ jobs:
         echo "NSG_NAME is ${{ inputs.nsg_name }}"
         echo "RG_NAME is ${{ inputs.rg_name }}"
 
-    - name: Install Ansible and expect
+    - name: Install Ansible
       run: |
         sudo apt update
-        sudo apt install -y ansible expect
+        sudo apt install -y ansible
 
     - name: Add private key to runner
       uses: webfactory/ssh-agent@v0.9.1
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        log-public-key: false
       
     - name: Get runner IP
       id: get_runner_ip
@@ -70,8 +71,9 @@ jobs:
 
     - name: Run ansible playbook
       run: |
-        ansible-playbook -i "${{ inputs.vm_ip }}," -u ${{ secrets.VM_ADMIN_USER }} \
-        --ssh-extra-args="-o StrictHostKeyChecking=no" connectivity_test.yml
+        ansible-playbook -i "${{ inputs.vm_ip }}," -u ${{ secrets.VM_ADMIN_USER }} configure_new_server.yml
+      env:
+        MY_HOME_DOMAIN: ${{ secrets.HOME }}
 
     - name: Delete whitelist rule from NSG
       if: always()
