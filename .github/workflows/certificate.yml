@@ -69,7 +69,13 @@ jobs:
             -inkey "/etc/letsencrypt/live/${{ vars.DOMAIN }}/privkey.pem" \
             -in "/etc/letsencrypt/live/${{ vars.DOMAIN }}/cert.pem" \
             -certfile "/etc/letsencrypt/live/${{ vars.DOMAIN }}/chain.pem" \
-            -passout "pass:dummy_password"
+            -passout "pass:dummy_password"#
+          
+          az keyvault certificate import \
+            --vault-name ${{ vars.KEYVAULT_NAME }} \
+            --name StagingCert \
+            --file certificate.pfx \
+            --password "dummy_password
 
       - name: Remove IP from Key Vault Firewall (Cleanup)
         if: always() 
