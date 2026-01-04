@@ -34,21 +34,22 @@ jobs:
           chmod 600 /tmp/cloudflare.ini
 
       - name: Obtain SSL Certificate
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 5
           max_attempts: 3
           retry_wait_seconds: 60
-        run: |
-          sudo certbot certonly \
-            --dns-cloudflare \
-            --dns-cloudflare-credentials /tmp/cloudflare.ini \
-            --dns-cloudflare-propagation-seconds 120 \
-            -d "${{ vars.DOMAIN }}" \
-            -d "www.${{ vars.DOMAIN }}" \
-            --non-interactive \
-            --agree-tos \
-            --staging \
-            -m "${{ secrets.EMAIL }}"
+          command: |
+            sudo certbot certonly \
+              --dns-cloudflare \
+              --dns-cloudflare-credentials /tmp/cloudflare.ini \
+              --dns-cloudflare-propagation-seconds 120 \
+              -d "${{ vars.DOMAIN }}" \
+              -d "www.${{ vars.DOMAIN }}" \
+              --non-interactive \
+              --agree-tos \
+              --staging \
+              -m "${{ secrets.EMAIL }}"
 
       - name: Get runner IP
         id: get_runner_ip
