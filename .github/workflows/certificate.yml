@@ -75,7 +75,7 @@ jobs:
             --vault-name ${{ vars.KEYVAULT_NAME }} \
             --name StagingCert \
             --file certificate.pfx \
-            --password "dummy_password
+            --password "dummy_password"
 
       - name: Remove IP from Key Vault Firewall (Cleanup)
         if: always() 
