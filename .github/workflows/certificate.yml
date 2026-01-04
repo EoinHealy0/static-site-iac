@@ -38,7 +38,7 @@ jobs:
           sudo certbot certonly \
             --dns-cloudflare \
             --dns-cloudflare-credentials /tmp/cloudflare.ini \
-            --dns-cloudflare-propagation-seconds 60 \
+            --dns-cloudflare-propagation-seconds 120 \
             -d "${{ vars.DOMAIN }}" \
             -d "www.${{ vars.DOMAIN }}" \
             --non-interactive \
