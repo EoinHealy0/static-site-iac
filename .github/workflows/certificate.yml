@@ -1,0 +1,62 @@
+name: Get Certificate
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 1 * *'  # Run monthly on the 1st at midnight
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  get-cert:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Install Certbot
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y certbot python3-certbot-dns-cloudflare
+      
+      - name: Create Cloudflare credentials file
+        run: |
+          echo "dns_cloudflare_api_token = ${{ secrets.CLOUDFLARE_TOKEN }}" > /tmp/cloudflare.ini
+          chmod 600 /tmp/cloudflare.ini
+
+      - name: Obtain SSL Certificate
+        run: |
+          sudo certbot certonly \
+            --dns-cloudflare \
+            --dns-cloudflare-credentials /tmp/cloudflare.ini \
+            -d "{{ var.DOMAIN}}" \
+            -d "www.{{ var.DOMAIN}}" \
+            --non-interactive \
+            --agree-tos \
+            --staging \
+            -m "${{ secrets.EMAIL }}"
+
+      - name: Get runner IP
+        id: get_runner_ip
+        run: |
+          RUNNER_IP=$(curl -s "https://api.ipify.org")
+          echo "RUNNER_IP=$RUNNER_IP" >> $GITHUB_OUTPUT
+          echo "Runner public IP is $RUNNER_IP"
+
+      - name: Add IP to Key Vault Firewall
+        run: |
+          az keyvault network-rule add --name ${{ vars.KEYVAULT_NAME }} --ip-address ${{ steps.get_runner_ip.outputs.RUNNER_IP  }}
+
+      - name: Remove IP from Key Vault Firewall (Cleanup)
+        if: always() 
+        run: |
+          az keyvault network-rule remove --name ${{ vars.KEYVAULT_NAME }} --ip-address ${{ steps.get_runner_ip.outputs.RUNNER_IP }}
