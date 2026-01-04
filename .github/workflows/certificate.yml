@@ -38,8 +38,8 @@ jobs:
           sudo certbot certonly \
             --dns-cloudflare \
             --dns-cloudflare-credentials /tmp/cloudflare.ini \
-            -d "{{ var.DOMAIN}}" \
-            -d "www.{{ var.DOMAIN}}" \
+            -d "{{ vars.DOMAIN }}" \
+            -d "www.{{ vars.DOMAIN }}" \
             --non-interactive \
             --agree-tos \
             --staging \
