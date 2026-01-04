@@ -6,6 +6,8 @@
     green_port: 8081
     blue_port: 8080
     active_color: blue
+    green_image: ghcr.io/eoinhealy0/my-site:latest
+    blue_image: ghcr.io/eoinhealy0/my-site:latest
   roles:
     - security_updates
     - configure_docker
