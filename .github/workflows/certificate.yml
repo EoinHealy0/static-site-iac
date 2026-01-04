@@ -34,9 +34,10 @@ jobs:
           chmod 600 /tmp/cloudflare.ini
 
       - name: Obtain SSL Certificate
-        timeout_minutes: 5
-        max_attempts: 3
-        retry_wait_seconds: 60
+        with:
+          timeout_minutes: 5
+          max_attempts: 3
+          retry_wait_seconds: 60
         run: |
           sudo certbot certonly \
             --dns-cloudflare \
