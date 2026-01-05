@@ -44,7 +44,7 @@ jobs:
 
     - name: Install Azure Python dependencies
       run: |
-        /opt/pipx/venvs/ansible-core/bin/python -m pip install azure-keyvault-secrets azure-identity azure-mgmt-keyvault
+        /opt/pipx/venvs/ansible-core/bin/python -m pip install azure-keyvault-secrets azure-identity azure-mgmt-keyvault ansible[azure]
 
     - name: Add private key to runner
       uses: webfactory/ssh-agent@v0.9.1

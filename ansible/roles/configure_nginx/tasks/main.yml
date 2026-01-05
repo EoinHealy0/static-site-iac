@@ -37,7 +37,7 @@
 
 - name: Create cert from secret
   ansible.builtin.copy:
-    content: "{{ cert_secret.secrets.secret| base64decode }}"
+    content: "{{ cert_secret.secrets.secret | base64decode }}"
     dest: /tmp/cert.pfx
     mode: '0600'
   delegate_to: localhost
