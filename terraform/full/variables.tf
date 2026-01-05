@@ -42,3 +42,8 @@ variable "cloudflare_zone" {
   description = "The Cloudflare zone ID for DNS records."
   type        = string
 }
+
+variable "domain_name" {
+  description = "The domain name for the static site."
+  type        = string
+}
