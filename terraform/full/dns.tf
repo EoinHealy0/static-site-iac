@@ -11,9 +11,7 @@ resource "cloudflare_dns_record" "dns_record2" {
   zone_id = var.cloudflare_zone
   name    = "www"
   type    = "CNAME"
+  content = "@"
   ttl     = 1
   proxied = true
-  data = {
-    "target" = "@"
-  }
 }
