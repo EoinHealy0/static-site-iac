@@ -3,7 +3,7 @@ resource "cloudflare_dns_record" "dns_record" {
   name    = "@"
   content   = azurerm_public_ip.public_ip.ip_address
   type    = "A"
-  ttl     = 300
+  ttl     = 1
   proxied = true
 }
 
@@ -12,6 +12,6 @@ resource "cloudflare_dns_record" "dns_record2" {
   name    = "www"
   content   = azurerm_public_ip.public_ip.ip_address
   type    = "CNAME"
-  ttl     = 300
+  ttl     = 1
   proxied = true
 }
