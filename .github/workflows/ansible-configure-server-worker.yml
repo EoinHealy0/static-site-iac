@@ -74,6 +74,9 @@ jobs:
         ansible-playbook -i "${{ inputs.vm_ip }}," -u ${{ secrets.VM_ADMIN_USER }} configure_new_server.yml
       env:
         MY_HOME_DOMAIN: ${{ secrets.HOME }}
+        KEYVAULT_NAME: ${{ vars.KEYVAULT_NAME }}
+        CERTIFICATE_NAME: ${{ vars.CERTIFICATE_NAME }}
+
 
     - name: Delete whitelist rule from NSG
       if: always()
