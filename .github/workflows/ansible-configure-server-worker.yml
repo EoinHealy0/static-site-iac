@@ -43,10 +43,6 @@ jobs:
         sudo apt install -y ansible
         ansible --version
 
-    - name: Install Azure Python dependencies
-      run: |
-        /opt/pipx/venvs/ansible-core/bin/python -m pip install azure-keyvault-secrets azure-identity azure-mgmt-keyvault ansible[azure]
-
     - name: Add private key to runner
       uses: webfactory/ssh-agent@v0.9.1
       with:
@@ -74,10 +70,14 @@ jobs:
         --direction Inbound --source-address-prefixes ${{ steps.get_runner_ip.outputs.RUNNER_IP }} \
         --source-port-ranges '*' --destination-address-prefixes '*' --destination-port-ranges 22
 
+    - name: Add IP to Key Vault Firewall
+      run: |
+        az keyvault network-rule add --name ${{ vars.KEYVAULT_NAME }} --ip-address ${{ steps.get_runner_ip.outputs.RUNNER_IP  }}
+
     - name: Install requirements
       run: ansible-galaxy collection install -r requirements.yml --force
 
-    - name: Install azure requirements
+    - name: Install Azure Python Dependencies
       run: /opt/pipx/venvs/ansible-core/bin/python -m pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
 
     - name: Run ansible playbook
@@ -88,6 +88,10 @@ jobs:
         KEYVAULT_NAME: ${{ vars.KEYVAULT_NAME }}
         CERTIFICATE_NAME: ${{ vars.CERTIFICATE_NAME }}
 
+    - name: Remove IP from Key Vault Firewall (Cleanup)
+      if: always() 
+      run: |
+        az keyvault network-rule remove --name ${{ vars.KEYVAULT_NAME }} --ip-address ${{ steps.get_runner_ip.outputs.RUNNER_IP }}
 
     - name: Delete whitelist rule from NSG
       if: always()
