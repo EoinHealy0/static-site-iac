@@ -67,7 +67,7 @@ jobs:
           sudo openssl pkcs12 -export \
             -out certificate.pfx \
             -inkey "/etc/letsencrypt/live/${{ vars.DOMAIN }}/privkey.pem" \
-            -certfile "/etc/letsencrypt/live/${{ vars.DOMAIN }}/chain.pem" \
+            -in "/etc/letsencrypt/live/${{ vars.DOMAIN }}/fullchain.pem" \
             -passout "pass:dummy_password"
           
           sudo chown runner:docker certificate.pfx
