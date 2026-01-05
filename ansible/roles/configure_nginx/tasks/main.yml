@@ -31,6 +31,7 @@
     auth_source: 'cli'
     version: current
   delegate_to: localhost
+  become: no
   no_log: false
   register: cert_secret
 
