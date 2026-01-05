@@ -63,7 +63,7 @@
   loop:
     - { marker: 'PRIVATE KEY', dest: '/etc/nginx/privkey.pem', mode: '0600' }
     - { marker: 'CERTIFICATE', dest: '/etc/nginx/cert.pem',    mode: '0644' }
-  notify: Reload Nginx
+  notify: Reload nginx
 
 # - name: Copy files to server
 #   ansible.builtin.copy:
