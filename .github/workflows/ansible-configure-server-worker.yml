@@ -99,4 +99,9 @@ jobs:
       run: |
         az network nsg rule delete --resource-group ${{ inputs.rg_name }} --nsg-name ${{ inputs.nsg_name }} \
         --name AllowGitHubRunnerIP
+
+    - name: Clear tmp files
+      if: always()
+      run: |
+        sudo rm -f /tmp/cert.pfx /tmp/bundle.pem 
       

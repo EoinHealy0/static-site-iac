@@ -69,11 +69,17 @@ jobs:
       
     - name: Terraform Plan
       if: inputs.destroy_only == false
-      run: terraform plan -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" -var="admin_username=${{ secrets.VM_ADMIN_USER }}" -var="env=${{ inputs.environment }}"
+      run: |
+        terraform plan -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" -var="admin_username=${{ secrets.VM_ADMIN_USER }}" -var="env=${{ inputs.environment }}" \
+        -var="cloudflare_zone=${{ secrets.CLOUDFLARE_ZONE_ID }}"  
     
     - name: Terraform Apply
       if: inputs.destroy_only == false
-      run: terraform apply -auto-approve -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" -var="admin_username=${{ secrets.VM_ADMIN_USER }}" -var="env=${{ inputs.environment }}"
+      run: |
+        terraform apply -auto-approve -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" -var="admin_username=${{ secrets.VM_ADMIN_USER }}" -var="env=${{ inputs.environment }}" \
+        -var="cloudflare_zone=${{ secrets.CLOUDFLARE_ZONE_ID }}"
+      env: 
+        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
 
     - name: Output Terraform Outputs
       if: inputs.destroy_only == false
