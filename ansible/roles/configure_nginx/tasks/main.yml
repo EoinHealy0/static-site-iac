@@ -49,6 +49,7 @@
     src: /tmp/cert.pfx
     path: /tmp/bundle.pem
     state: present
+    mode: '0644'
   delegate_to: localhost
   no_log: false
 
