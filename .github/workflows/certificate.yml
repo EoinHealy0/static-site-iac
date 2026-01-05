@@ -69,7 +69,8 @@ jobs:
             -inkey "/etc/letsencrypt/live/${{ vars.DOMAIN }}/privkey.pem" \
             -in "/etc/letsencrypt/live/${{ vars.DOMAIN }}/cert.pem" \
             -certfile "/etc/letsencrypt/live/${{ vars.DOMAIN }}/chain.pem" \
-            -passout "pass:dummy_password"#
+            -passout "pass:dummy_password"
+            -legacy
           
           sudo chown runner:docker certificate.pfx
           
