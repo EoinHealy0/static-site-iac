@@ -41,6 +41,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y ansible
+        ansible --version
 
     - name: Install Azure Python dependencies
       run: |
@@ -76,9 +77,12 @@ jobs:
     - name: Install requirements
       run: ansible-galaxy collection install -r requirements.yml --force
 
+    - name: Install azure requirements
+      run: /opt/pipx/venvs/ansible-core/bin/python -m pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
+
     - name: Run ansible playbook
       run: |
-        ansible-playbook -i "${{ inputs.vm_ip }}," -u ${{ secrets.VM_ADMIN_USER }} configure_new_server.yml
+        ansible-playbook -v -i "${{ inputs.vm_ip }}," -u ${{ secrets.VM_ADMIN_USER }} configure_new_server.yml
       env:
         MY_HOME_DOMAIN: ${{ secrets.HOME }}
         KEYVAULT_NAME: ${{ vars.KEYVAULT_NAME }}
