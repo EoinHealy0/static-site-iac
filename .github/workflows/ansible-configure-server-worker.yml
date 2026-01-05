@@ -69,6 +69,9 @@ jobs:
         --direction Inbound --source-address-prefixes ${{ steps.get_runner_ip.outputs.RUNNER_IP }} \
         --source-port-ranges '*' --destination-address-prefixes '*' --destination-port-ranges 22
 
+    - name: Install requirements
+      run: ansible-galaxy collection install -r requirements.yml --force
+
     - name: Run ansible playbook
       run: |
         ansible-playbook -i "${{ inputs.vm_ip }}," -u ${{ secrets.VM_ADMIN_USER }} configure_new_server.yml
