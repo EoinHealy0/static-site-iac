@@ -5,14 +5,14 @@ terraform {
       version = ">= 4.57.0"
     }
     cloudflare = {
-      source = "cloudflare/cloudflare"
+      source  = "cloudflare/cloudflare"
       version = ">= 5.15.0"
     }
   }
-  
+
   backend "azurerm" {
     container_name = "fulltfstate"
-    key = "terraform.tfstate"
+    key            = "terraform.tfstate"
   }
 }
 
