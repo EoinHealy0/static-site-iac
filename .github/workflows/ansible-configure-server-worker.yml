@@ -74,7 +74,7 @@ jobs:
       run: |
         az keyvault network-rule add --name ${{ vars.KEYVAULT_NAME }} --ip-address ${{ steps.get_runner_ip.outputs.RUNNER_IP  }}
 
-    - name: Install requirements
+    - name: Install ansible collections
       run: ansible-galaxy collection install -r requirements.yml --force
 
     - name: Install Azure Python Dependencies
@@ -82,7 +82,7 @@ jobs:
 
     - name: Run ansible playbook
       run: |
-        ansible-playbook -v -i "${{ inputs.vm_ip }}," -u ${{ secrets.VM_ADMIN_USER }} configure_new_server.yml
+        ansible-playbook -i "${{ inputs.vm_ip }}," -u ${{ secrets.VM_ADMIN_USER }} configure_new_server.yml
       env:
         MY_HOME_DOMAIN: ${{ secrets.HOME }}
         KEYVAULT_NAME: ${{ vars.KEYVAULT_NAME }}
