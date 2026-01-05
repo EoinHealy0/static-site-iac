@@ -34,16 +34,22 @@ jobs:
           chmod 600 /tmp/cloudflare.ini
 
       - name: Obtain SSL Certificate
-        run: |
-          sudo certbot certonly \
-            --dns-cloudflare \
-            --dns-cloudflare-credentials /tmp/cloudflare.ini \
-            -d "{{ var.DOMAIN}}" \
-            -d "www.{{ var.DOMAIN}}" \
-            --non-interactive \
-            --agree-tos \
-            --staging \
-            -m "${{ secrets.EMAIL }}"
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 5
+          max_attempts: 3
+          retry_wait_seconds: 60
+          command: |
+            sudo certbot certonly \
+              --dns-cloudflare \
+              --dns-cloudflare-credentials /tmp/cloudflare.ini \
+              --dns-cloudflare-propagation-seconds 120 \
+              -d "${{ vars.DOMAIN }}" \
+              -d "www.${{ vars.DOMAIN }}" \
+              --non-interactive \
+              --agree-tos \
+              --staging \
+              -m "${{ secrets.EMAIL }}"
 
       - name: Get runner IP
         id: get_runner_ip
@@ -55,6 +61,22 @@ jobs:
       - name: Add IP to Key Vault Firewall
         run: |
           az keyvault network-rule add --name ${{ vars.KEYVAULT_NAME }} --ip-address ${{ steps.get_runner_ip.outputs.RUNNER_IP  }}
+
+      - name: Upload Certificate to Azure Key Vault
+        run: |
+          sudo openssl pkcs12 -export \
+            -out certificate.pfx \
+            -inkey "/etc/letsencrypt/live/${{ vars.DOMAIN }}/privkey.pem" \
+            -in "/etc/letsencrypt/live/${{ vars.DOMAIN }}/fullchain.pem" \
+            -passout "pass:dummy_password"
+          
+          sudo chown runner:docker certificate.pfx
+          
+          az keyvault certificate import \
+            --vault-name ${{ vars.KEYVAULT_NAME }} \
+            --name StagingCert \
+            --file certificate.pfx \
+            --password "dummy_password"
 
       - name: Remove IP from Key Vault Firewall (Cleanup)
         if: always() 
