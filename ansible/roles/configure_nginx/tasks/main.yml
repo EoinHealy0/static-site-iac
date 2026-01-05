@@ -32,12 +32,12 @@
     version: current
   delegate_to: localhost
   become: no
-  no_log: false
+  no_log: true
   register: cert_secret
 
 - name: Create cert from secret
   ansible.builtin.copy:
-    content: "{{ cert_secret.secrets.secret | base64decode }}"
+    content: "{{ cert_secret.secrets.secret | b64decode }}"
     dest: /tmp/cert.pfx
     mode: '0600'
   delegate_to: localhost
