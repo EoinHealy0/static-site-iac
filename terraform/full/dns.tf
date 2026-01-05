@@ -10,7 +10,7 @@ resource "cloudflare_dns_record" "dns_record" {
 resource "cloudflare_dns_record" "dns_record2" {
   zone_id = var.cloudflare_zone
   name    = "www"
-  content = "@"
+  content = var.domain_name
   type    = "CNAME"
   ttl     = 1
   proxied = true
