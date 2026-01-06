@@ -45,6 +45,7 @@
     name: "container_{{ item.colour }}"
     image: "{{ item.image }}"
     state: started
+    pull: always
     published_ports:
       - "127.0.0.1:{{ item.port }}:80"
     restart_policy: always
