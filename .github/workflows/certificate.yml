@@ -73,7 +73,7 @@ jobs:
           
           az keyvault certificate import \
             --vault-name ${{ vars.KEYVAULT_NAME }} \
-            --name StagingCert \
+            --name "{{ vars.CERTIFICATE_NAME }}" \
             --file certificate.pfx \
             --password "dummy_password"
 
