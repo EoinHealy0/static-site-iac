@@ -5,13 +5,14 @@ terraform {
       version = ">= 4.57.0"
     }
   }
-  
+
   backend "azurerm" {
     container_name = "fulltfstate"
-    key = "terraform.tfstate"
+    key            = "terraform.tfstate"
   }
 }
 
 provider "azurerm" {
   features {}
 }
+

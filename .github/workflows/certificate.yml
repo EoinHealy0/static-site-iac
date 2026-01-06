@@ -48,7 +48,6 @@ jobs:
               -d "www.${{ vars.DOMAIN }}" \
               --non-interactive \
               --agree-tos \
-              --staging \
               -m "${{ secrets.EMAIL }}"
 
       - name: Get runner IP
@@ -60,7 +59,7 @@ jobs:
 
       - name: Add IP to Key Vault Firewall
         run: |
-          az keyvault network-rule add --name ${{ vars.KEYVAULT_NAME }} --ip-address ${{ steps.get_runner_ip.outputs.RUNNER_IP  }}
+          az keyvault network-rule add --name ${{ vars.KEYVAULT_NAME }} --ip-address ${{ steps.get_runner_ip.outputs.RUNNER_IP }} --output table
 
       - name: Upload Certificate to Azure Key Vault
         run: |
@@ -74,11 +73,11 @@ jobs:
           
           az keyvault certificate import \
             --vault-name ${{ vars.KEYVAULT_NAME }} \
-            --name StagingCert \
+            --name "${{ vars.CERTIFICATE_NAME }}" \
             --file certificate.pfx \
             --password "dummy_password"
 
       - name: Remove IP from Key Vault Firewall (Cleanup)
         if: always() 
         run: |
-          az keyvault network-rule remove --name ${{ vars.KEYVAULT_NAME }} --ip-address ${{ steps.get_runner_ip.outputs.RUNNER_IP }}
+          az keyvault network-rule remove --name ${{ vars.KEYVAULT_NAME }} --ip-address ${{ steps.get_runner_ip.outputs.RUNNER_IP }} --output table
