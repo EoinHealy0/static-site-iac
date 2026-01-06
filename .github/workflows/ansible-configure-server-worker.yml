@@ -72,7 +72,7 @@ jobs:
 
     - name: Add IP to Key Vault Firewall
       run: |
-        az keyvault network-rule add --name ${{ vars.KEYVAULT_NAME }} --ip-address ${{ steps.get_runner_ip.outputs.RUNNER_IP  }}
+        az keyvault network-rule add --name ${{ vars.KEYVAULT_NAME }} --ip-address ${{ steps.get_runner_ip.outputs.RUNNER_IP }} --output table
 
     - name: Install ansible collections
       run: ansible-galaxy collection install -r requirements.yml --force
@@ -93,7 +93,7 @@ jobs:
     - name: Remove IP from Key Vault Firewall (Cleanup)
       if: always() 
       run: |
-        az keyvault network-rule remove --name ${{ vars.KEYVAULT_NAME }} --ip-address ${{ steps.get_runner_ip.outputs.RUNNER_IP }}
+        az keyvault network-rule remove --name ${{ vars.KEYVAULT_NAME }} --ip-address ${{ steps.get_runner_ip.outputs.RUNNER_IP }} --output table
 
     - name: Delete whitelist rule from NSG
       if: always()

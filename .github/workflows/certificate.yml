@@ -60,7 +60,7 @@ jobs:
 
       - name: Add IP to Key Vault Firewall
         run: |
-          az keyvault network-rule add --name ${{ vars.KEYVAULT_NAME }} --ip-address ${{ steps.get_runner_ip.outputs.RUNNER_IP  }}
+          az keyvault network-rule add --name ${{ vars.KEYVAULT_NAME }} --ip-address ${{ steps.get_runner_ip.outputs.RUNNER_IP }} --output table
 
       - name: Upload Certificate to Azure Key Vault
         run: |
@@ -77,8 +77,9 @@ jobs:
             --name StagingCert \
             --file certificate.pfx \
             --password "dummy_password"
+            --output table
 
       - name: Remove IP from Key Vault Firewall (Cleanup)
         if: always() 
         run: |
-          az keyvault network-rule remove --name ${{ vars.KEYVAULT_NAME }} --ip-address ${{ steps.get_runner_ip.outputs.RUNNER_IP }}
+          az keyvault network-rule remove --name ${{ vars.KEYVAULT_NAME }} --ip-address ${{ steps.get_runner_ip.outputs.RUNNER_IP }} --output table
