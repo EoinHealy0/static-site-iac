@@ -1,0 +1,13 @@
+---
+- name: Configure DNS records in Cloudflare
+  community.general.cloudflare_dns:
+    zone: "{{ item.zone }}"
+    type: "{{ item.type }}"
+    name: "{{ item.dns_record_name }}"
+    content: "{{ item.content }}"
+    ttl: "{{ ttl }}"
+    proxied: true
+  delegate_to: localhost
+  loop:
+    - { zone: "{{ lookup('ansible.builtin.env', cloudflare_zone) }}", dns_record_name: "@", type: "A", content: "{{ inventory_hostname }}" }
+    - { zone: "{{ lookup('ansible.builtin.env', cloudflare_zone) }}", dns_record_name: "www", type: "CNAME", content: "@" }

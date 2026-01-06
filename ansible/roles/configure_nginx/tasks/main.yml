@@ -26,8 +26,8 @@
 
 - name: Get certificate from keyvault
   azure.azcollection.azure_rm_keyvaultsecret_info:
-    vault_uri: "https://{{ lookup('env', 'KEYVAULT_NAME') }}.vault.azure.net/"
-    name: "{{ lookup('env', 'CERTIFICATE_NAME') }}"
+    vault_uri: "https://{{ lookup('ansible.builtin.env', 'KEYVAULT_NAME') }}.vault.azure.net/"
+    name: "{{ lookup('ansible.builtin.env', 'CERTIFICATE_NAME') }}"
     auth_source: 'cli'
     version: current
   delegate_to: localhost
@@ -55,7 +55,7 @@
 
 - name: Deploy Key and Cert to Server
   ansible.builtin.copy:
-    content: "{{ lookup('file', '/tmp/bundle.pem') | community.crypto.split_pem | select('search', item.marker) | first }}"
+    content: "{{ lookup('ansible.builtin.file', '/tmp/bundle.pem') | community.crypto.split_pem | select('search', item.marker) | first }}"
     dest: "{{ item.dest }}"
     owner: root
     group: root

@@ -37,13 +37,3 @@ variable "ssh_public_key" {
   description = "public key for SSH access to the VM"
   type        = string
 }
-
-variable "cloudflare_zone" {
-  description = "The Cloudflare zone ID for DNS records."
-  type        = string
-}
-
-variable "domain_name" {
-  description = "The domain name for the static site."
-  type        = string
-}
