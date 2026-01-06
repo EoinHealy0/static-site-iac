@@ -48,7 +48,6 @@ jobs:
               -d "www.${{ vars.DOMAIN }}" \
               --non-interactive \
               --agree-tos \
-              --staging \
               -m "${{ secrets.EMAIL }}"
 
       - name: Get runner IP
