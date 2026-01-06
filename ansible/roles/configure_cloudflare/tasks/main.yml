@@ -7,7 +7,9 @@
     content: "{{ item.content }}"
     ttl: "{{ ttl }}"
     proxied: true
+    api_token: "{{ lookup('ansible.builtin.env', 'CLOUDFLARE_TOKEN') }}"
   delegate_to: localhost
+  no_log: true
   loop:
     - { zone: "{{ lookup('ansible.builtin.env', 'CLOUDFLARE_ZONE') }}", dns_record_name: "@", type: "A", content: "{{ inventory_hostname }}" }
     - { zone: "{{ lookup('ansible.builtin.env', 'CLOUDFLARE_ZONE') }}", dns_record_name: "www", type: "CNAME", content: "@" }
