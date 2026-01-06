@@ -77,7 +77,6 @@ jobs:
             --name StagingCert \
             --file certificate.pfx \
             --password "dummy_password"
-            --output table
 
       - name: Remove IP from Key Vault Firewall (Cleanup)
         if: always() 
