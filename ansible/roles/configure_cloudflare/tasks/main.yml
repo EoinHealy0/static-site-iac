@@ -1,7 +1,7 @@
 ---
 - name: Configure DNS records in Cloudflare
   community.general.cloudflare_dns:
-    zone: "{{ item.zone }}"
+    zone: "{{ lookup('ansible.builtin.env', 'DOMAIN') }}"
     type: "{{ item.type }}"
     name: "{{ item.dns_record_name }}"
     content: "{{ item.content }}"

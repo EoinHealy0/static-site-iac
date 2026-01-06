@@ -89,6 +89,7 @@ jobs:
         CERTIFICATE_NAME: ${{ vars.CERTIFICATE_NAME }}
         CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
         CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
+        DOMAIN: ${{ vars.DOMAIN }}
 
     - name: Remove IP from Key Vault Firewall (Cleanup)
       if: always() 
