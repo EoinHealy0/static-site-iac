@@ -7,6 +7,7 @@
     content: "{{ item.content }}"
     ttl: "{{ ttl }}"
     proxied: true
+    solo: true
     api_token: "{{ lookup('ansible.builtin.env', 'CLOUDFLARE_TOKEN') }}"
   delegate_to: localhost
   no_log: true
