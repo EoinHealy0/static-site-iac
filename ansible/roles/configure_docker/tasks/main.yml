@@ -39,16 +39,3 @@
     name: docker
     state: started
     enabled: yes
-
-- name: Create frontend containers
-  community.docker.docker_container:
-    name: "container_{{ item.colour }}"
-    image: "{{ item.image }}"
-    state: started
-    pull: always
-    published_ports:
-      - "127.0.0.1:{{ item.port }}:80"
-    restart_policy: always
-  loop:
-    - { colour: blue, port: "{{ blue_port }}", image: "{{ blue_image }}" }
-    - { colour: green, port: "{{ green_port }}", image: "{{ green_image }}" }

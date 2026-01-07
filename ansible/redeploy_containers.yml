@@ -1,0 +1,12 @@
+---
+- name: Test connectivity to host
+  hosts: all
+  gather_facts: yes
+  vars:
+    green_port: 8081
+    blue_port: 8080
+    active_colour: blue
+    green_image: ghcr.io/eoinhealy0/my-site:develop
+    blue_image: ghcr.io/eoinhealy0/my-site:production
+  roles:
+    - configure_docker

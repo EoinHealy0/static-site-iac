@@ -1,0 +1,48 @@
+upstream prod_backend {
+    server 127.0.0.1:{{ prod_port }};
+}
+
+upstream dev_backend {
+    server 127.0.0.1:{{ dev_port }};
+}
+
+server {
+    listen 443 ssl;
+    server_name {{ lookup('env', 'DOMAIN') }} www.{{ lookup('env', 'DOMAIN') }};
+
+    ssl_certificate     /etc/nginx/cert.pem;    
+    ssl_certificate_key /etc/nginx/privkey.pem;   
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-Content-Type-Options "nosniff";
+
+    location / {
+        proxy_pass http://prod_backend;
+        
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name dev.{{ lookup('env', 'DOMAIN') }};
+
+    ssl_certificate     /etc/nginx/cert.pem;
+    ssl_certificate_key /etc/nginx/privkey.pem;
+
+    add_header X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";
+
+    location / {
+        proxy_pass http://dev_backend;
+        
+        add_header X-Environment "Development";
+        
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
