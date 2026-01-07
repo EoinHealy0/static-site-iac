@@ -17,6 +17,10 @@ on:
         required: false
         type: boolean
         default: false
+      skip_terraform_apply:
+        required: false
+        type: boolean
+        default: false
 permissions:
   id-token: write
   contents: read
@@ -29,6 +33,7 @@ jobs:
       environment: ${{ inputs.environment }}
       destroy_after_deploy: ${{ inputs.destroy_after_deploy }}
       destroy_only: ${{ inputs.destroy_only }}
+      skip_terraform_apply: ${{ inputs.skip_terraform_apply }}
 
   config:
     needs: deploy
