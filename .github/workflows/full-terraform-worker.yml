@@ -10,6 +10,9 @@ on:
       destroy_only:
         required: true
         type: boolean
+      skip_terraform_apply:
+        required: true
+        type: boolean
     outputs:
       vm_ip:
         description: "The public IP address of the deployed VM"
