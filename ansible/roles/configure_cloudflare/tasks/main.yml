@@ -14,3 +14,4 @@
   loop:
     - { zone: "{{ lookup('ansible.builtin.env', 'CLOUDFLARE_ZONE') }}", dns_record_name: "@", type: "A", content: "{{ inventory_hostname }}" }
     - { zone: "{{ lookup('ansible.builtin.env', 'CLOUDFLARE_ZONE') }}", dns_record_name: "www", type: "CNAME", content: "@" }
+    - { zone: "{{ lookup('ansible.builtin.env', 'CLOUDFLARE_ZONE') }}", dns_record_name: "dev", type: "CNAME", content: "@" }
