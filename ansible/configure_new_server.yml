@@ -3,11 +3,10 @@
   hosts: all
   become: yes
   vars:
-    green_port: 8081
-    blue_port: 8080
-    active_colour: blue
-    green_image: ghcr.io/eoinhealy0/my-site:latest
-    blue_image: ghcr.io/eoinhealy0/my-site:latest
+    dev_port: 8081
+    prod_port: 8080
+    dev_image: ghcr.io/eoinhealy0/my-site:dev
+    prod_image: ghcr.io/eoinhealy0/my-site:prod
   roles:
     - security_updates
     - configure_docker
