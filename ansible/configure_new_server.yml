@@ -5,8 +5,10 @@
   vars:
     dev_port: 8081
     prod_port: 8080
-    dev_image: ghcr.io/eoinhealy0/my-site:dev
-    prod_image: ghcr.io/eoinhealy0/my-site:prod
+    dev_image: ghcr.io/eoinhealy0/my-site
+    prod_image: ghcr.io/eoinhealy0/my-site
+    prod_tag: prod
+    dev_tag: dev
   roles:
     - security_updates
     - configure_docker

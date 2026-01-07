@@ -1,9 +1,9 @@
 ---
 prod_port: 8080
 dev_port: 8081
-prod_image: nginx:alpine-slim
-dev_image: nginx:alpine-slim
+prod_image: nginx
+dev_image: nginx
 site_conf_name: my_static_site.conf
-prod_tag: prod
-dev_tag: dev
+prod_tag: alpine-slim
+dev_tag: alpine-slim
 cert_update_required: true
