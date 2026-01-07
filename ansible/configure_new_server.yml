@@ -5,7 +5,7 @@
   vars:
     green_port: 8081
     blue_port: 8080
-    active_color: blue
+    active_colour: blue
     green_image: ghcr.io/eoinhealy0/my-site:latest
     blue_image: ghcr.io/eoinhealy0/my-site:latest
   roles:
@@ -13,4 +13,5 @@
     - configure_docker
     - configure_fail2ban
     - configure_nginx
+    - deploy_site
     - configure_cloudflare

@@ -1,0 +1,80 @@
+---
+- name: Create frontend containers
+  community.docker.docker_container:
+    name: "container_{{ item.env }}"
+    image: "{{ item.image }}"
+    state: started
+    pull: always
+    published_ports:
+      - "127.0.0.1:{{ item.port }}:80"
+    restart_policy: always
+  loop:
+    - { env: prod, port: "{{ prod_port }}", image: "{{ prod_image }}:{{ prod_tag }}" }
+    - { env: dev, port: "{{ dev_port }}", image: "{{ dev_image }}:{{ dev_tag }}" }
+
+- name: Copy nginx configuration file
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: "/etc/nginx/sites-available/{{ site_conf_name }}"
+  register: nginx_conf_changed
+  when: 
+  notify: Reload nginx
+
+- name: Enable the site by creating a symlink
+  ansible.builtin.file:
+    src: "/etc/nginx/sites-available/{{ site_conf_name }}"
+    dest: "/etc/nginx/sites-enabled/{{ site_conf_name }}"
+    state: link
+  when: nginx_conf_changed.changed
+  notify: Reload nginx
+
+- name: Remove the default nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Reload nginx
+
+- name: Get certificate from keyvault
+  azure.azcollection.azure_rm_keyvaultsecret_info:
+    vault_uri: "https://{{ lookup('ansible.builtin.env', 'KEYVAULT_NAME') }}.vault.azure.net/"
+    name: "{{ lookup('ansible.builtin.env', 'CERTIFICATE_NAME') }}"
+    auth_source: 'cli'
+    version: current
+  delegate_to: localhost
+  become: no
+  no_log: true
+  when: cert_update_required
+  register: cert_secret
+
+- name: Create cert from secret
+  ansible.builtin.copy:
+    content: "{{ cert_secret.secrets[0].secret | b64decode }}"
+    dest: /tmp/cert.pfx
+    mode: '0600'
+  delegate_to: localhost
+  when: cert_update_required
+  no_log: false
+
+- name: Dump/Parse PKCS#12 file
+  community.crypto.openssl_pkcs12:
+    action: parse
+    src: /tmp/cert.pfx
+    path: /tmp/bundle.pem
+    state: present
+    mode: '0644'
+  delegate_to: localhost
+  when: cert_update_required
+  no_log: false
+
+- name: Deploy Key and Cert to Server
+  ansible.builtin.copy:
+    content: "{{ lookup('ansible.builtin.file', '/tmp/bundle.pem') | community.crypto.split_pem | select('search', item.marker) | first }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  when: cert_update_required
+  loop:
+    - { marker: 'PRIVATE KEY', dest: '/etc/nginx/privkey.pem', mode: '0600' }
+    - { marker: 'CERTIFICATE', dest: '/etc/nginx/cert.pem',    mode: '0644' }
+  notify: Reload nginx
