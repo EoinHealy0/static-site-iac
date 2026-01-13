@@ -1,2 +1,1 @@
-# static-site-iac
-IaC for static site
+Just building up familiarity with github actions compared to ado
